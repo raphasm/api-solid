@@ -1,0 +1,145 @@
+@baseUrl = http://localhost:3333
+@authTokenUser = {{authenticate_user.response.body.token}}
+@authTokenAdmin = {{authenticate_admin.response.body.token}}
+
+
+@refresh = refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiNDgyNzkxZi1mZTNkLTQ1NjEtOTE4Mi05MThlNTgzZjMyOTYiLCJpYXQiOjE2OTkwMTI2OTUsImV4cCI6MTY5OTYxNzQ5NX0.G5-79b4LFcr0erXhO0ROn8JZ9X3_qYYSbPrNH10LXfs; Path=/; Secure; HttpOnly; SameSite=Strict; Domain=localhost
+
+@latitude = -46.8461611
+@longitude = -23.4928485
+
+
+
+# ---User Routes---
+
+
+# @name register_user
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "Raphael Margoni",
+  "email": "rapha@hotmail.com.br",
+  "password": "123456"
+}
+
+###
+
+# @name authenticate_user
+POST {{baseUrl}}/sessions
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser}}
+
+{
+  "email": "rapha@hotmail.com",
+  "password": "123456"
+}
+
+
+###
+
+# @name authenticate_admin
+POST {{baseUrl}}/sessions
+Content-Type: application/json
+
+{
+  "email": "rapha_admin@hotmail.com",
+  "password": "123456"
+}
+
+###
+
+# @name profile
+GET  {{baseUrl}}/me
+Content-Type: application/json
+Authorization: Bearer {{authTokenAdmin}}
+
+###
+
+# @name refresh_token
+PATCH   {{baseUrl}}/token/refresh
+Content-Type: application/json
+Cookie: {{refresh}}
+
+{
+  "email": "rapha@hotmail.com",
+  "password": "123456"
+}
+
+
+###
+
+# ---Gym Routes---
+
+
+# @name create_gym
+POST  {{baseUrl}}/gyms
+Content-Type: application/json
+Authorization: Bearer {{authTokenAdmin}}
+
+{
+	"title": "Academia de programação",
+	"description":"Academia perto de casa",
+	"phone": "1198374645",
+	"latitude": -23.4938384,
+	"longitude": -46.8471014
+}
+
+###
+
+# @name search_gym
+GET  {{baseUrl}}/gyms/search?q=academia&page=1
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser}}
+
+
+###
+
+# @name search_gym_nearby
+GET  {{baseUrl}}/gyms/nearby?latitude=-23.4928485&longitude=-46.8461611
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser}}
+
+
+
+
+###
+
+
+# ---CheckIns Routes---
+
+
+# @name create_checkIn
+POST  {{baseUrl}}/gyms/30e503aa-f6af-47e8-b134-7fb60c92c0c3/check-ins
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser}}
+
+{
+	"latitude": -23.4938384,
+	"longitude": -46.8471014
+}
+
+
+
+###
+
+# @name history_checkins
+GET  {{baseUrl}}/check-ins/history
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser}}
+
+
+
+###
+
+# @name metrics_checkins
+GET  {{baseUrl}}/check-ins/metrics
+Content-Type: application/json
+Authorization: Bearer {{authTokenUser}}
+
+
+###
+
+# @name validate_checkins
+PATCH {{baseUrl}}/check-ins/ddaf0e95-6fb6-4948-afe7-62b1831e767c/validate
+Authorization: Bearer {{authTokenAdmin}}
